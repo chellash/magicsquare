@@ -23,12 +23,21 @@ This common sum is called the **magic constant**.
 
 Each row, column, and diagonal sums to **65** (the magic constant).
 
-## 📚 The 3-Step Algorithm
+## �️ Code Workflow
 
-This implementation uses an elegant method that works for any odd-order magic square (3×3, 5×5, 7×7, etc.):
+The core logic is implemented in the `generateMagicSquare()` function in `script.js`, which follows this exact execution flow:
 
-### **Step 1: Create the Number Matrix**
-Generate a square matrix containing numbers 1 to n² in sequential order.
+### **1. Input Validation**
+Checks if the user input `n` is:
+- A valid number
+- An odd number (odd order)
+- Within the range 3 to 15
+
+### **2. Matrix Generation (The 3-Step Algorithm)**
+The function calls three helper functions to generate the necessary matrices:
+
+#### **Step 1: Create Number Matrix** (`createNumberMatrix`)
+Generates a square matrix containing numbers 1 to n² in sequential order.
 
 **Example (n=5):**
 ```
@@ -39,9 +48,9 @@ Generate a square matrix containing numbers 1 to n² in sequential order.
 21  22  23  24  25
 ```
 
-### **Step 2: Create Identifier Matrices**
+#### **Step 2: Create Identifier Matrices**
 
-**2a. Row Identifier Matrix:**
+**2a. Row Identifier Matrix** (`createRowMatrix`):
 - Middle column is numbered 1 to n (top to bottom)
 - Adjacent columns wrap around using modulo arithmetic
 
@@ -54,7 +63,7 @@ Generate a square matrix containing numbers 1 to n² in sequential order.
 3  4  5  1  2
 ```
 
-**2b. Column Identifier Matrix:**
+**2b. Column Identifier Matrix** (`createColumnMatrix`):
 - Mirror image (horizontal flip) of the row matrix
 
 **Example (n=5):**
@@ -66,13 +75,19 @@ Generate a square matrix containing numbers 1 to n² in sequential order.
 2  1  5  4  3
 ```
 
-### **Step 3: Superimpose**
+#### **Step 3: Superimpose** (`createFinalMatrix`)
 For each position (i,j):
-1. Get row identifier from `rowMatrix[i][j]`
-2. Get column identifier from `columnMatrix[i][j]`
-3. Look up `numberMatrix[row][column]` to get the final value
+1. **Row Index**: Get value from `rowMatrix[i][j]`
+2. **Column Index**: Get value from `columnMatrix[i][j]`
+3. **Lookup**: Find value at `numberMatrix[row][column]`
 
-This produces the magic square where all sums equal the magic constant!
+This produces the final magic square!
+
+### **3. Display Results** (`displayMatrix`)
+Renders the generated matrices into the HTML DOM with animation effects.
+
+### **4. Validation** (`validateMagicSquare`)
+Calculates sums for all rows, columns, and diagonals to ensure they match the **Magic Constant**.
 
 ## 🚀 Usage
 
