@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Square Generator - 3 Step Algorithm</title>
+    <style>
+        /* ============================================
+           BASIC RESET AND TYPOGRAPHY
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        /* ============================================
+           CONTAINER AND LAYOUT
+           ============================================ */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ============================================
+           HEADER STYLES
+           ============================================ */
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        /* ============================================
+           INPUT SECTION
+           ============================================ */
+        .input-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* ============================================
+           TAB NAVIGATION FOR STEPS
+           ============================================ */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px;
+            background: #f0f0f0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: #e0e0e0;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* ============================================
+           MATRIX DISPLAY
+           ============================================ */
+        .output-section {
+            display: none;
+        }
+
+        .output-section.active {
+            display: block;
+        }
+
+        .matrix-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .matrix-info h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .matrix-info p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Matrix grid container */
+        .matrix {
+            display: inline-grid;
+            gap: 5px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 20px auto;
+        }
+
+        .matrix-wrapper {
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        /* Individual cells in the matrix */
+        .cell {
+            min-width: 50px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        .cell:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* ============================================
+           VALIDATION SECTION
+           ============================================ */
+        .validation {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .validation h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .validation-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin-bottom: 5px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #ddd;
+        }
+
+        .validation-item.valid {
+            border-left-color: #28a745;
+        }
+
+        .validation-item.invalid {
+            border-left-color: #dc3545;
+        }
+
+        .status {
+            font-weight: 600;
+        }
+
+        .status.valid {
+            color: #28a745;
+        }
+
+        .status.invalid {
+            color: #dc3545;
+        }
+
+        /* ============================================
+           RESPONSIVE DESIGN
+           ============================================ */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .cell {
+                min-width: 40px;
+                min-height: 40px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- ============================================
+             HEADER SECTION
+             ============================================ -->
+        <h1>✨ Magic Square Generator</h1>
+        <p class="subtitle">3-Step Algorithm Implementation</p>
+
+        <!-- ============================================
+             INPUT SECTION
+             User enters the order (size) of the magic square
+             ============================================ -->
+        <div class="input-section">
+            <label for="orderInput">
+                Enter Order (odd number: 3, 5, 7, 9, 11, 13, 15):
+            </label>
+            <input type="number" id="orderInput" min="3" max="15" step="2" value="5" placeholder="Enter an odd number">
+            <button onclick="generateMagicSquare()">Generate Magic Square</button>
+        </div>
+
+        <!-- ============================================
+             TAB NAVIGATION
+             Allows user to switch between different steps
+             ============================================ -->
+        <div id="tabsContainer" style="display: none;">
+            <div class="tabs">
+                <!-- Final result tab -->
+                <div class="tab active" onclick="showStep('final')">
+                    ✓ Final Magic Square
+                </div>
+                <!-- Step 1: Number matrix tab -->
+                <div class="tab" onclick="showStep('numbers')">
+                    1️⃣ Number Matrix
+                </div>
+                <!-- Step 2a: Row identifier tab -->
+                <div class="tab" onclick="showStep('row')">
+                    2️⃣ Row Identifier
+                </div>
+                <!-- Step 2b: Column identifier tab -->
+                <div class="tab" onclick="showStep('column')">
+                    3️⃣ Column Identifier
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================
+             OUTPUT SECTIONS
+             Each section shows a different step of the algorithm
+             ============================================ -->
+
+        <!-- STEP 1: Number Matrix (1 to n²) -->
+        <div id="numbersSection" class="output-section">
+            <div class="matrix-info">
+                <h3>Step 1: Number Matrix</h3>
+                <p>
+                    This matrix contains sequential numbers from 1 to n² (where n is the order).
+                    It serves as a lookup table. We'll use the row and column identifier matrices
+                    to determine which number from this matrix goes into each cell of the final magic square.
+                </p>
+            </div>
+            <div class="matrix-wrapper">
+                <div id="numbersMatrix" class="matrix"></div>
+            </div>
+        </div>
+
+        <!-- STEP 2a: Row Identifier Matrix -->
+        <div id="rowSection" class="output-section">
+            <div class="matrix-info">
+                <h3>Step 2a: Row Identifier Matrix</h3>
+                <p>
+                    The middle column is numbered 1 to n (top to bottom). Columns on either side
+                    get values by adding/subtracting 1, with wrapping (modulo arithmetic). This matrix
+                    tells us which ROW to look at in the number matrix for each position.
+                </p>
+            </div>
+            <div class="matrix-wrapper">
+                <div id="rowMatrix" class="matrix"></div>
+            </div>
+        </div>
+
+        <!-- STEP 2b: Column Identifier Matrix -->
+        <div id="columnSection" class="output-section">
+            <div class="matrix-info">
+                <h3>Step 2b: Column Identifier Matrix</h3>
+                <p>
+                    This is a mirror image (horizontal flip) of the row identifier matrix. This matrix
+                    tells us which COLUMN to look at in the number matrix for each position.
+                </p>
+            </div>
+            <div class="matrix-wrapper">
+                <div id="columnMatrix" class="matrix"></div>
+            </div>
+        </div>
+
+        <!-- STEP 3: Final Magic Square -->
+        <div id="finalSection" class="output-section active">
+            <div class="matrix-info">
+                <h3>Final Magic Square</h3>
+                <p>
+                    For each position (i,j), we look at row_matrix[i][j] and column_matrix[i][j] to get
+                    row and column identifiers. We then look up number_matrix[row][column] to get the value
+                    for that position. All rows, columns, and diagonals sum to the magic constant!
+                </p>
+                <p style="margin-top: 10px;">
+                    <strong>Magic Constant:</strong> <span id="magicConstant">-</span>
+                </p>
+            </div>
+            <div class="matrix-wrapper">
+                <div id="finalMatrix" class="matrix"></div>
+            </div>
+        </div>
+
+        <!-- ============================================
+             VALIDATION SECTION
+             Shows sums for all rows, columns, and diagonals
+             ============================================ -->
+        <div id="validationSection" class="validation" style="display: none;">
+            <h3>Validation Results</h3>
+            <div id="validationContent"></div>
+        </div>
+    </div>
+
+    <!-- Link to external JavaScript file -->
+    <script src="script.js"></script>
+</body>
+
+</html>
